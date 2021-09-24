@@ -8,6 +8,7 @@ knn_7_glove,0.60908
 nb_glove,0.44973
 
 lr_glove,0.69621
+lr_glove_scale,0.69319
 
 weight_random,0.35304
 random,0.33243

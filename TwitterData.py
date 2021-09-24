@@ -5,6 +5,7 @@ from random import random
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
+from sklearn import preprocessing
 
 class TwitterData:
     def __init__(self):
@@ -23,6 +24,12 @@ class TwitterData:
         # self.write_predictions(predictions, "predictions/knn_7_glove_preds.csv")
 
     def lr_preds(self, train_data, train_labels, test_data):
+        scaler = preprocessing.StandardScaler().fit(train_data)
+        train_data = scaler.transform(train_data)
+
+        scaler = preprocessing.StandardScaler().fit(test_data)
+        test_data = scaler.transform(test_data)
+
         lr = LogisticRegression().fit(train_data, train_labels)
         predictions = lr.predict(test_data)
         return predictions
