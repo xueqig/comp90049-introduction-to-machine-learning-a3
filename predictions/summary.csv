@@ -2,5 +2,12 @@ technique,score
 knn_1_glove,0.57221
 knn_2_glove,0.58193
 knn_3_glove,0.58562
+knn_5_glove,0.59919
+knn_7_glove,0.60908
+
+nb_glove,0.44973
+
+lr_glove,0.69621
+
 weight_random,0.35304
 random,0.33243
