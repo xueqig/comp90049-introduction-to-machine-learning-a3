@@ -1,33 +1,38 @@
 import csv
 import math
+import ast
 from random import random
-
+from sklearn.neighbors import KNeighborsClassifier
 
 class TwitterData:
     def __init__(self):
-        self.train_labels = []
-        self.train_tweet_ids = []
-        self.test_tweet_ids = []
-        self.read_train_full()
-        self.read_test_full()
-        self.write_predictions(self.weight_rand_preds(), "weight_rand_preds.csv")
-        self.write_predictions(self.rand_preds(), "rand_preds.csv")
+        self.train_labels, self.train_tweet_ids, self.train_data = self.read_data_glove("data/train_glove.csv")
+        self.test_labels, self.test_tweet_ids, self.test_data = self.read_data_glove("data/test_glove.csv")
+        predictions = self.knn_preds(2, self.train_data, self.train_labels, self.test_data)
+        self.write_predictions(predictions, "predictions/knn_2_glove_preds.csv")
 
-    def rand_preds(self):
+    def knn_preds(self, neighbours, train_data, train_labels, test_data):
+        print("knn")
+        knc = KNeighborsClassifier(n_neighbors=neighbours)
+        knc.fit(train_data, train_labels)
+        predictions = knc.predict(test_data)
+        return predictions
+
+    def rand_preds(self, test_tweet_ids):
         labels = ["pos", "neu", "neg"]
         rand_preds = []
-        for i in range(len(self.test_tweet_ids)):
+        for i in range(len(test_tweet_ids)):
             rand_idx = math.floor(len(labels) * random())
             rand_preds.append(labels[rand_idx])
         return rand_preds
 
-    def weight_rand_preds(self):
-        train_len = len(self.train_tweet_ids)
-        train_pos_pct = self.train_labels.count("pos") / train_len
-        train_neu_pct = self.train_labels.count("neu") / train_len
-        train_neg_pct = self.train_labels.count("neg") / train_len
+    def weight_rand_preds(self, train_labels, test_tweet_ids):
+        train_len = len(train_labels)
+        train_pos_pct = train_labels.count("pos") / train_len
+        train_neu_pct = train_labels.count("neu") / train_len
+        train_neg_pct = train_labels.count("neg") / train_len
 
-        test_len = len(self.test_tweet_ids)
+        test_len = len(test_tweet_ids)
         test_pos = math.ceil(test_len * train_pos_pct)
         test_neu = math.ceil(test_len * train_neu_pct)
         test_neg = test_len - test_pos - test_neu
@@ -49,6 +54,42 @@ class TwitterData:
             weight_rand_preds = weight_rand_preds[:rand_idx] + ["neg"] + weight_rand_preds[rand_idx:]
 
         return weight_rand_preds
+
+    def read_data_glove(self, file_path):
+        labels = []
+        tweet_ids = []
+        data = []
+        with open(file_path) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    print(f'Column names are {", ".join(row)}')
+                    line_count += 1
+                else:
+                    labels.append(row[0])
+                    tweet_ids.append(row[1])
+                    data.append(ast.literal_eval(row[2]))
+                    line_count += 1
+        return labels, tweet_ids, data
+
+    def read_data_count(self, file_path):
+        labels = []
+        tweet_ids = []
+        data = []
+        with open(file_path) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            line_count = 0
+            for row in csv_reader:
+                if line_count == 0:
+                    print(f'Column names are {", ".join(row)}')
+                    line_count += 1
+                else:
+                    labels.append(row[0])
+                    tweet_ids.append(row[1])
+                    data.append(ast.literal_eval(row[2]))
+                    line_count += 1
+        return labels, tweet_ids, data
 
     def read_train_full(self):
         with open("data/train_full.csv") as csv_file:
@@ -78,9 +119,9 @@ class TwitterData:
     def get_train_labels(self):
         return self.train_labels
 
-    def write_predictions(self, predictions, filename):
-        print("Writing " + filename + "...")
-        pred_file = open(filename, "w")
+    def write_predictions(self, predictions, file_path):
+        print("Writing " + file_path + "...")
+        pred_file = open(file_path, "w")
         writer = csv.writer(pred_file)
         writer.writerow(["tweet_id", "sentiment"])
         for i in range(len(self.test_tweet_ids)):
