@@ -8,11 +8,12 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
 import pandas as pd
+from scipy.sparse import lil_matrix
 
 class TwitterData:
     def __init__(self):
-        # self.train_labels, self.train_tweet_ids, self.train_data = self.read_data_count("data/train_count.csv")
-        self.test_labels, self.test_tweet_ids, self.test_tweets = self.read_data("data/test_glove.csv")
+        self.train_labels, self.train_tweet_ids, self.train_tweets = self.read_count_tfidf_data("data/train_tfidf.csv")
+        self.test_labels, self.test_tweet_ids, self.test_tweets = self.read_count_tfidf_data("data/test_tfidf.csv")
 
         # lr
         # predictions = self.lr_preds(self.train_data, self.train_labels, self.test_tweets)
@@ -23,8 +24,41 @@ class TwitterData:
         # self.write_predictions(predictions, "predictions/nb_glove_preds.csv")
 
         # knn
-        # predictions = self.knn_preds(7, self.train_data, self.train_labels, self.test_tweets)
-        # self.write_predictions(predictions, "predictions/knn_7_glove_preds.csv")
+        predictions = self.knn_preds(7, self.train_tweets, self.train_labels, self.test_tweets)
+        self.write_predictions(predictions, "predictions/knn_7_tfidf_preds.csv")
+
+    # Read count and tfidf data
+    def read_count_tfidf_data(self, file_path):
+        data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
+        labels = np.array(list(data["sentiment"]))
+        tweet_ids = np.array(list(data["tweet_id"]))
+        tweets = list(data["tweet"])
+
+        tweets_sparse_matrix = lil_matrix((len(tweets), 5000))
+
+        for i in range(len(tweets)):
+            tweet = tweets[i]
+            for j in range(len(tweet)):
+                word = tweet[j]
+                tweets_sparse_matrix[i, word[0]] = word[1]
+
+        return labels, tweet_ids, tweets_sparse_matrix
+
+    # Read glove data
+    def read_glove_data(self, file_path):
+        data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
+        labels = list(data["sentiment"])
+        tweet_ids = list(data["tweet_id"])
+        tweets = list(data["tweet"])
+        return labels, tweet_ids, tweets
+
+    def read_raw_data(self, file_path):
+        data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int, "tweet": str})
+        labels = np.array(list(data["sentiment"]))
+        tweet_ids = np.array(list(data["tweet_id"]))
+        tweets = np.array(list(data["tweet"]))
+
+        return labels, tweet_ids, tweets
 
     def lr_preds(self, train_data, train_labels, test_data):
         scaler = preprocessing.StandardScaler().fit(train_data)
@@ -86,14 +120,6 @@ class TwitterData:
             weight_rand_preds = weight_rand_preds[:rand_idx] + ["neg"] + weight_rand_preds[rand_idx:]
 
         return weight_rand_preds
-
-    # Read count, tfidf or glove data
-    def read_data(self, file_path):
-        data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
-        labels = list(data["sentiment"])
-        tweet_ids = list(data["tweet_id"])
-        tweets = list(data["tweet"])
-        return labels, tweet_ids, tweets
 
     def write_predictions(self, predictions, file_path):
         print("Writing " + file_path + "...")

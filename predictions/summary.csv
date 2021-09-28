@@ -1,6 +1,16 @@
 technique,score
+
+knn_1_count,
+knn_3_count,
+knn_5_count,
+knn_7_count,
+
+knn_1_tfidf,0.55428
+knn_3_tfidf,0.59802
+knn_5_tfidf,0.61226
+knn_7_tfidf,0.63471
+
 knn_1_glove,0.57221
-knn_2_glove,0.58193
 knn_3_glove,0.58562
 knn_5_glove,0.59919
 knn_7_glove,0.60908
