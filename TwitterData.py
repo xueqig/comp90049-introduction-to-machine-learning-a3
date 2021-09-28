@@ -1,26 +1,29 @@
 import csv
 import math
-import ast
+from ast import literal_eval
+import numpy as np
 from random import random
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
+import pandas as pd
 
 class TwitterData:
     def __init__(self):
-        self.train_labels, self.train_tweet_ids, self.train_data = self.read_data_glove("data/train_glove.csv")
-        self.test_labels, self.test_tweet_ids, self.test_data = self.read_data_glove("data/test_glove.csv")
+        # self.train_labels, self.train_tweet_ids, self.train_data = self.read_data_count("data/train_count.csv")
+        self.test_labels, self.test_tweet_ids, self.test_tweets = self.read_data("data/test_glove.csv")
+
         # lr
-        predictions = self.lr_preds(self.train_data, self.train_labels, self.test_data)
-        self.write_predictions(predictions, "predictions/lr_glove_preds.csv")
+        # predictions = self.lr_preds(self.train_data, self.train_labels, self.test_tweets)
+        # self.write_predictions(predictions, "predictions/lr_glove_preds.csv")
 
         # nb
-        # predictions = self.nb_preds(self.train_data, self.train_labels, self.test_data)
+        # predictions = self.nb_preds(self.train_data, self.train_labels, self.test_tweets)
         # self.write_predictions(predictions, "predictions/nb_glove_preds.csv")
 
         # knn
-        # predictions = self.knn_preds(7, self.train_data, self.train_labels, self.test_data)
+        # predictions = self.knn_preds(7, self.train_data, self.train_labels, self.test_tweets)
         # self.write_predictions(predictions, "predictions/knn_7_glove_preds.csv")
 
     def lr_preds(self, train_data, train_labels, test_data):
@@ -84,69 +87,13 @@ class TwitterData:
 
         return weight_rand_preds
 
-    def read_data_glove(self, file_path):
-        labels = []
-        tweet_ids = []
-        data = []
-        with open(file_path) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    print(f'Column names are {", ".join(row)}')
-                    line_count += 1
-                else:
-                    labels.append(row[0])
-                    tweet_ids.append(row[1])
-                    data.append(ast.literal_eval(row[2]))
-                    line_count += 1
-        return labels, tweet_ids, data
-
-    def read_data_count(self, file_path):
-        labels = []
-        tweet_ids = []
-        data = []
-        with open(file_path) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    print(f'Column names are {", ".join(row)}')
-                    line_count += 1
-                else:
-                    labels.append(row[0])
-                    tweet_ids.append(row[1])
-                    data.append(ast.literal_eval(row[2]))
-                    line_count += 1
-        return labels, tweet_ids, data
-
-    def read_train_full(self):
-        with open("data/train_full.csv") as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    print(f'Column names are {", ".join(row)}')
-                    line_count += 1
-                else:
-                    self.train_labels.append(row[0])
-                    self.train_tweet_ids.append(row[1])
-                    line_count += 1
-
-    def read_test_full(self):
-        with open("data/test_full.csv") as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    print(f'Column names are {", ".join(row)}')
-                    line_count += 1
-                else:
-                    self.test_tweet_ids.append(row[1])
-                    line_count += 1
-
-    def get_train_labels(self):
-        return self.train_labels
+    # Read count, tfidf or glove data
+    def read_data(self, file_path):
+        data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
+        labels = list(data["sentiment"])
+        tweet_ids = list(data["tweet_id"])
+        tweets = list(data["tweet"])
+        return labels, tweet_ids, tweets
 
     def write_predictions(self, predictions, file_path):
         print("Writing " + file_path + "...")
