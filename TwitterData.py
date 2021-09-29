@@ -9,23 +9,46 @@ from sklearn.linear_model import LogisticRegression
 from sklearn import preprocessing
 import pandas as pd
 from scipy.sparse import lil_matrix
+from sklearn.metrics import accuracy_score
 
 class TwitterData:
     def __init__(self):
-        self.train_labels, self.train_tweet_ids, self.train_tweets = self.read_count_tfidf_data("data/train_tfidf.csv")
-        self.test_labels, self.test_tweet_ids, self.test_tweets = self.read_count_tfidf_data("data/test_tfidf.csv")
+        pass
+        # self.train_labels, self.train_tweet_ids, self.train_tweets = self.read_glove_data("data/train_glove.csv")
+        # self.dev_labels, self.dev_tweet_ids, self.dev_tweets = self.read_glove_data("data/dev_glove.csv")
+        # self.test_tweet_ids, self.test_tweets = self.read_count_tfidf_data("data/test_count.csv")
 
         # lr
-        # predictions = self.lr_preds(self.train_data, self.train_labels, self.test_tweets)
-        # self.write_predictions(predictions, "predictions/lr_glove_preds.csv")
+        # testing = self.lr_preds(self.train_data, self.train_labels, self.test_tweets)
+        # self.write_predictions(testing, "testing/lr_glove_preds.csv")
 
         # nb
-        # predictions = self.nb_preds(self.train_data, self.train_labels, self.test_tweets)
-        # self.write_predictions(predictions, "predictions/nb_glove_preds.csv")
+        # self.perform_nb()
 
         # knn
-        predictions = self.knn_preds(7, self.train_tweets, self.train_labels, self.test_tweets)
-        self.write_predictions(predictions, "predictions/knn_7_tfidf_preds.csv")
+        # for i in [1, 3, 5, 7]:
+        #     testing = self.knn_preds(i, self.train_tweets, self.train_labels, self.dev_tweets)
+        #     self.write_predictions(self.dev_tweet_ids, testing, "development/knn_" + str(i) + "_glove_preds.csv")
+
+    # Perform naive bayes for all data sets and write testing
+    def perform_nb(self):
+        # Count
+        train_labels, train_tweet_ids, train_tweets = self.read_count_tfidf_data("data/train_count.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.read_count_tfidf_data("data/dev_count.csv")
+        predictions = self.nb_preds(train_tweets.toarray(), train_labels, dev_tweets.toarray())
+        self.write_predictions(dev_tweet_ids, predictions, "development/nb_count_preds.csv")
+
+        # TF-IDF
+        train_labels, train_tweet_ids, train_tweets = self.read_count_tfidf_data("data/train_tfidf.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.read_count_tfidf_data("data/dev_tfidf.csv")
+        predictions = self.nb_preds(train_tweets.toarray(), train_labels, dev_tweets.toarray())
+        self.write_predictions(dev_tweet_ids, predictions, "development/nb_tfidf_preds.csv")
+
+        # Glove
+        train_labels, train_tweet_ids, train_tweets = self.read_glove_data("data/train_glove.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.read_glove_data("data/dev_glove.csv")
+        predictions = self.nb_preds(train_tweets, train_labels, dev_tweets)
+        self.write_predictions(dev_tweet_ids, predictions, "development/nb_glove_preds.csv")
 
     # Read count and tfidf data
     def read_count_tfidf_data(self, file_path):
@@ -72,13 +95,14 @@ class TwitterData:
         return predictions
 
     def nb_preds(self, train_data, train_labels, test_data):
+        print("Start Naive Bayes...")
         gnb = GaussianNB()
         gnb.fit(train_data, train_labels)
         predictions = gnb.predict(test_data)
         return predictions
 
     def knn_preds(self, neighbours, train_data, train_labels, test_data):
-        print("knn")
+        print("Start KNN, K = " + str(neighbours) + " ...")
         knc = KNeighborsClassifier(n_neighbors=neighbours)
         knc.fit(train_data, train_labels)
         predictions = knc.predict(test_data)
@@ -121,19 +145,34 @@ class TwitterData:
 
         return weight_rand_preds
 
-    def write_predictions(self, predictions, file_path):
+    def write_predictions(self, tweet_ids, predictions, file_path):
         print("Writing " + file_path + "...")
         pred_file = open(file_path, "w")
         writer = csv.writer(pred_file)
         writer.writerow(["tweet_id", "sentiment"])
-        for i in range(len(self.test_tweet_ids)):
-            writer.writerow([self.test_tweet_ids[i], predictions[i]])
+        for i in range(len(tweet_ids)):
+            writer.writerow([tweet_ids[i], predictions[i]])
         pred_file.close()
-        print("Finish writing " + str(i + 1) + " predictions")
+        print("Finish writing " + str(i + 1) + " testing")
 
+    def evaluation(self):
+        summary_file = open("development/summary.csv", "w")
+        writer = csv.writer(summary_file)
+        writer.writerow(["Method", "Accuracy Score"])
+
+        dev_labels, dev_tweet_ids, dev_tweets = self.read_count_tfidf_data("data/dev_count.csv")
+        pred_files = ["knn_1_count", "knn_3_count", "knn_5_count", "knn_7_count",
+                      "knn_1_tfidf", "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf",
+                      "knn_1_glove", "knn_3_glove", "knn_5_glove", "knn_7_glove",
+                      "nb_count", "nb_tfidf", "nb_glove"]
+        for pred_file in pred_files:
+            predictions = pd.read_csv("development/" + pred_file + "_preds.csv")["sentiment"]
+            acc_score = accuracy_score(dev_labels, predictions)
+            writer.writerow([pred_file, acc_score])
 
 def main():
     td = TwitterData()
+    td.evaluation()
 
 
 if __name__ == "__main__":
