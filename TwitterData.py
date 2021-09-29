@@ -19,8 +19,8 @@ class TwitterSentimentPrediction:
         # self.test_tweet_ids, self.test_tweets = self.read_count_tfidf_data("data/test_count.csv")
 
         # lr
-        # testing = self.lr_preds(self.train_data, self.train_labels, self.test_tweets)
-        # self.write_predictions(testing, "testing/lr_glove_preds.csv")
+        # predictions = self.lr_preds(self.train_tweets, self.train_labels, self.dev_tweets)
+        # self.write_predictions(self.dev_tweet_ids, predictions, "development/lr_glove_preds.csv")
 
         # nb
         # self.perform_nb()
@@ -90,7 +90,7 @@ class TwitterSentimentPrediction:
         scaler = preprocessing.StandardScaler().fit(test_data)
         test_data = scaler.transform(test_data)
 
-        lr = LogisticRegression().fit(train_data, train_labels)
+        lr = LogisticRegression(max_iter=1000).fit(train_data, train_labels)
         predictions = lr.predict(test_data)
         return predictions
 
@@ -164,7 +164,8 @@ class TwitterSentimentPrediction:
         pred_files = ["knn_1_count", "knn_3_count", "knn_5_count", "knn_7_count",
                       "knn_1_tfidf", "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf",
                       "knn_1_glove", "knn_3_glove", "knn_5_glove", "knn_7_glove",
-                      "nb_count", "nb_tfidf", "nb_glove"]
+                      "nb_count", "nb_tfidf", "nb_glove",
+                      "lr_glove"]
         for pred_file in pred_files:
             predictions = pd.read_csv("development/" + pred_file + "_preds.csv")["sentiment"]
             acc_score = accuracy_score(dev_labels, predictions)
