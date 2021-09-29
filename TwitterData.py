@@ -11,7 +11,7 @@ import pandas as pd
 from scipy.sparse import lil_matrix
 from sklearn.metrics import accuracy_score
 
-class TwitterData:
+class TwitterSentimentPrediction:
     def __init__(self):
         pass
         # self.train_labels, self.train_tweet_ids, self.train_tweets = self.read_glove_data("data/train_glove.csv")
@@ -171,8 +171,8 @@ class TwitterData:
             writer.writerow([pred_file, acc_score])
 
 def main():
-    td = TwitterData()
-    td.evaluation()
+    tsp = TwitterSentimentPrediction()
+    tsp.evaluation()
 
 
 if __name__ == "__main__":
