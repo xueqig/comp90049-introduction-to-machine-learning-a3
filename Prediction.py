@@ -3,48 +3,48 @@ from random import random
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
-from DataProcessing import TwitterData
+from DataProcessing import TwitterDataProcessing
 
 
 class SentimentPrediction:
     def __init__(self):
-        self.td = TwitterData()
+        self.tdp = TwitterDataProcessing()
 
     # Perform naive bayes for all data sets and write testing
     def nb_predictions(self):
         # Count
-        train_labels, train_tweet_ids, train_tweets = self.td.read_count_tfidf_data("data/train_count.csv")
-        dev_labels, dev_tweet_ids, dev_tweets = self.td.read_count_tfidf_data("data/dev_count.csv")
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_count.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
         predictions = self.naive_bayes(train_tweets.toarray(), train_labels, dev_tweets.toarray())
         self.write_predictions(dev_tweet_ids, predictions, "development/nb_count_preds.csv")
 
         # TF-IDF
-        train_labels, train_tweet_ids, train_tweets = self.td.read_count_tfidf_data("data/train_tfidf.csv")
-        dev_labels, dev_tweet_ids, dev_tweets = self.td.read_count_tfidf_data("data/dev_tfidf.csv")
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
         predictions = self.naive_bayes(train_tweets.toarray(), train_labels, dev_tweets.toarray())
-        self.td.write_predictions(dev_tweet_ids, predictions, "development/nb_tfidf_preds.csv")
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/nb_tfidf_preds.csv")
 
         # Glove
-        train_labels, train_tweet_ids, train_tweets = self.td.read_glove_data("data/train_glove.csv")
-        dev_labels, dev_tweet_ids, dev_tweets = self.td.read_glove_data("data/dev_glove.csv")
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_glove_data("data/train_glove.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_glove_data("data/dev_glove.csv")
         predictions = self.naive_bayes(train_tweets, train_labels, dev_tweets)
-        self.td.write_predictions(dev_tweet_ids, predictions, "development/nb_glove_preds.csv")
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/nb_glove_preds.csv")
 
     def lr_predictions(self):
-        train_labels_count, train_tweet_ids_count, train_tweets_count = self.td.read_count_tfidf_data("data/train_count.csv")
-        dev_labels_count, dev_tweet_ids_count, dev_tweets_count = self.td.read_count_tfidf_data("data/dev_count.csv")
+        train_labels_count, train_tweet_ids_count, train_tweets_count = self.tdp.read_count_tfidf_data("data/train_count.csv")
+        dev_labels_count, dev_tweet_ids_count, dev_tweets_count = self.tdp.read_count_tfidf_data("data/dev_count.csv")
         predictions = self.logistic_regression(train_tweets_count, train_labels_count, dev_tweets_count)
-        self.td.write_predictions(dev_tweet_ids_count, predictions, "development/lr_count_preds.csv")
+        self.tdp.write_predictions(dev_tweet_ids_count, predictions, "development/lr_count_preds.csv")
 
-        train_labels_tfidf, train_tweet_ids_tfidf, train_tweets_tfidf = self.td.read_count_tfidf_data("data/train_tfidf.csv")
-        dev_labels_tfidf, dev_tweet_ids_tfidf, dev_tweets_tfidf = self.td.read_count_tfidf_data("data/dev_tfidf.csv")
+        train_labels_tfidf, train_tweet_ids_tfidf, train_tweets_tfidf = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
+        dev_labels_tfidf, dev_tweet_ids_tfidf, dev_tweets_tfidf = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
         predictions = self.logistic_regression(train_tweets_tfidf, train_labels_tfidf, dev_tweets_tfidf)
-        self.td.write_predictions(dev_tweet_ids_tfidf, predictions, "development/lr_tfidf_preds.csv")
+        self.tdp.write_predictions(dev_tweet_ids_tfidf, predictions, "development/lr_tfidf_preds.csv")
 
-        train_labels_glove, train_tweet_ids_glove, train_tweets_glove = self.td.read_glove_data("data/train_glove.csv")
-        dev_labels_glove, dev_tweet_ids_glove, dev_tweets_glove = self.td.read_glove_data("data/dev_glove.csv")
+        train_labels_glove, train_tweet_ids_glove, train_tweets_glove = self.tdp.read_glove_data("data/train_glove.csv")
+        dev_labels_glove, dev_tweet_ids_glove, dev_tweets_glove = self.tdp.read_glove_data("data/dev_glove.csv")
         predictions = self.logistic_regression(train_tweets_glove, train_labels_glove, dev_tweets_glove)
-        self.td.write_predictions(dev_tweet_ids_glove, predictions, "development/lr_glove_preds.csv")
+        self.tdp.write_predictions(dev_tweet_ids_glove, predictions, "development/lr_glove_preds.csv")
 
     def logistic_regression(self, train_tweet, train_labels, test_data):
         print("Start Logistic Regression...")

@@ -1,18 +1,19 @@
 import csv
 import pandas as pd
 from sklearn.metrics import accuracy_score
+from DataProcessing import TwitterDataProcessing
 
 
 class PerformanceEvaluation:
     def __init__(self):
-        pass
+        self.tdp = TwitterDataProcessing()
 
     def evaluation(self):
         summary_file = open("development/summary.csv", "w")
         writer = csv.writer(summary_file)
         writer.writerow(["Method", "Accuracy Score"])
 
-        dev_labels, dev_tweet_ids, dev_tweets = self.read_count_tfidf_data("data/dev_count.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
         pred_files = ["knn_1_count", "knn_3_count", "knn_5_count", "knn_7_count",
                       "knn_1_tfidf", "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf",
                       "knn_1_glove", "knn_3_glove", "knn_5_glove", "knn_7_glove",
