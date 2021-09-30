@@ -3,6 +3,7 @@ from random import random
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 from DataProcessing import TwitterDataProcessing
 
 
@@ -10,13 +11,32 @@ class SentimentPrediction:
     def __init__(self):
         self.tdp = TwitterDataProcessing()
 
+    def dt_predictions(self):
+        # Count
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_count.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
+        predictions = self.decision_tree(train_tweets, train_labels, dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/dt_count_preds.csv")
+
+        # TF-IDF
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
+        predictions = self.decision_tree(train_tweets, train_labels, dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/dt_tfidf_preds.csv")
+
+        # Glove
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_glove_data("data/train_glove.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_glove_data("data/dev_glove.csv")
+        predictions = self.decision_tree(train_tweets, train_labels, dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/dt_glove_preds.csv")
+
     # Perform naive bayes for all data sets and write testing
     def nb_predictions(self):
         # Count
         train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_count.csv")
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
         predictions = self.naive_bayes(train_tweets.toarray(), train_labels, dev_tweets.toarray())
-        self.write_predictions(dev_tweet_ids, predictions, "development/nb_count_preds.csv")
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/nb_count_preds.csv")
 
         # TF-IDF
         train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
@@ -45,6 +65,13 @@ class SentimentPrediction:
         dev_labels_glove, dev_tweet_ids_glove, dev_tweets_glove = self.tdp.read_glove_data("data/dev_glove.csv")
         predictions = self.logistic_regression(train_tweets_glove, train_labels_glove, dev_tweets_glove)
         self.tdp.write_predictions(dev_tweet_ids_glove, predictions, "development/lr_glove_preds.csv")
+
+    def decision_tree(self, train_tweet, train_labels, test_tweet):
+        print("Start Decision Tree...")
+        dtc = DecisionTreeClassifier(criterion="entropy")
+        dtc.fit(train_tweet, train_labels)
+        predictions = dtc.predict(test_tweet)
+        return predictions
 
     def logistic_regression(self, train_tweet, train_labels, test_data):
         print("Start Logistic Regression...")
@@ -106,7 +133,7 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.lr_predictions()
+    sp.dt_predictions()
 
 
 if __name__ == "__main__":
