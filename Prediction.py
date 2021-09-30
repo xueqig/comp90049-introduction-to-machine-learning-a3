@@ -4,12 +4,21 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.neural_network import MLPClassifier
 from DataProcessing import TwitterDataProcessing
 
 
 class SentimentPrediction:
     def __init__(self):
         self.tdp = TwitterDataProcessing()
+        self.train_labels_count, self.train_tweet_ids_count, self.train_tweets_count = self.tdp.read_count_tfidf_data("data/train_count.csv")
+        self.dev_labels_count, self.dev_tweet_ids_count, self.dev_tweets_count = self.tdp.read_count_tfidf_data("data/dev_count.csv")
+
+        self.train_labels_tfidf, self.train_tweet_ids_tfidf, self.train_tweets_tfidf = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
+        self.dev_labels_tfidf, self.dev_tweet_ids_tfidf, self.dev_tweets_tfidf = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
+
+        self.train_labels_glove, self.train_tweet_ids_glove, self.train_tweets_glove = self.tdp.read_glove_data("data/train_glove.csv")
+        self.dev_labels_glove, self.dev_tweet_ids_glove, self.dev_tweets_glove = self.tdp.read_glove_data("data/dev_glove.csv")
 
     def dt_predictions(self):
         # Count
@@ -29,6 +38,20 @@ class SentimentPrediction:
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_glove_data("data/dev_glove.csv")
         predictions = self.decision_tree(train_tweets, train_labels, dev_tweets)
         self.tdp.write_predictions(dev_tweet_ids, predictions, "development/dt_glove_preds.csv")
+
+    # neural_network
+    def nn_predictions(self):
+        # Count
+        predictions_count = self.neural_network(self.train_tweets_count, self.train_labels_count, self.dev_tweets_count)
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions_count, "development/nn_count_preds.csv")
+
+        # TF-IDF
+        predictions_tfidf = self.neural_network(self.train_tweets_tfidf, self.train_labels_tfidf, self.dev_tweets_tfidf)
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions_tfidf, "development/nn_tfidf_preds.csv")
+
+        # Glove
+        predictions_glove = self.neural_network(self.train_tweets_glove, self.train_labels_glove, self.dev_tweets_glove)
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions_glove, "development/nn_glove_preds.csv")
 
     # Perform naive bayes for all data sets and write testing
     def nb_predictions(self):
@@ -73,10 +96,17 @@ class SentimentPrediction:
         predictions = dtc.predict(test_tweet)
         return predictions
 
-    def logistic_regression(self, train_tweet, train_labels, test_data):
+    def neural_network(self, train_tweet, train_labels, test_tweet):
+        print("Start Neural Network...")
+        mlpc = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes = (5, 2), random_state = 1)
+        mlpc.fit(train_tweet, train_labels)
+        predictions = mlpc.predict(test_tweet)
+        return predictions
+
+    def logistic_regression(self, train_tweet, train_labels, test_tweet):
         print("Start Logistic Regression...")
         lr = LogisticRegression(max_iter=1000).fit(train_tweet, train_labels)
-        predictions = lr.predict(test_data)
+        predictions = lr.predict(test_tweet)
         return predictions
 
     def naive_bayes(self, train_data, train_labels, test_data):
@@ -133,7 +163,7 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.dt_predictions()
+    sp.nn_predictions()
 
 
 if __name__ == "__main__":

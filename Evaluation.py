@@ -19,6 +19,7 @@ class PerformanceEvaluation:
                       "knn_1_glove", "knn_3_glove", "knn_5_glove", "knn_7_glove",
                       "nb_count", "nb_tfidf", "nb_glove",
                       "lr_count", "lr_tfidf", "lr_glove",
+                      "nn_count", "nn_tfidf", "nn_glove",
                       "dt_count", "dt_tfidf", "dt_glove"]
         for pred_file in pred_files:
             predictions = pd.read_csv("development/" + pred_file + "_preds.csv")["sentiment"]
