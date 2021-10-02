@@ -20,24 +20,31 @@ class SentimentPrediction:
         self.train_labels_glove, self.train_tweet_ids_glove, self.train_tweets_glove = self.tdp.read_glove_data("data/train_glove.csv")
         self.dev_labels_glove, self.dev_tweet_ids_glove, self.dev_tweets_glove = self.tdp.read_glove_data("data/dev_glove.csv")
 
-    def dt_predictions(self):
+    def knn_predictions(self, neighbours):
         # Count
-        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_count.csv")
-        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
-        predictions = self.decision_tree(train_tweets, train_labels, dev_tweets)
-        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/dt_count_preds.csv")
+        predictions_count = self.k_neighbors(neighbours, self.train_tweets_count, self.train_labels_count, self.dev_tweets_count)
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions_count, "development/knn_" + str(neighbours) + "_count_preds.csv")
 
         # TF-IDF
-        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
-        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
-        predictions = self.decision_tree(train_tweets, train_labels, dev_tweets)
-        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/dt_tfidf_preds.csv")
+        predictions_tfidf = self.k_neighbors(neighbours, self.train_tweets_tfidf, self.train_labels_tfidf, self.dev_tweets_tfidf)
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions_tfidf, "development/knn_" + str(neighbours) + "_tfidf_preds.csv")
 
         # Glove
-        train_labels, train_tweet_ids, train_tweets = self.tdp.read_glove_data("data/train_glove.csv")
-        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_glove_data("data/dev_glove.csv")
-        predictions = self.decision_tree(train_tweets, train_labels, dev_tweets)
-        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/dt_glove_preds.csv")
+        predictions_glove = self.k_neighbors(neighbours, self.train_tweets_glove, self.train_labels_glove, self.dev_tweets_glove)
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions_glove, "development/knn_" + str(neighbours) + "_glove_preds.csv")
+
+    def dt_predictions(self, max_depth):
+        # Count
+        predictions_count = self.decision_tree(max_depth, self.train_tweets_count, self.train_labels_count, self.dev_tweets_count)
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions_count, "development/dt_" + str(max_depth) + "_count_preds.csv")
+
+        # TF-IDF
+        predictions_tfidf = self.decision_tree(max_depth, self.train_tweets_tfidf, self.train_labels_tfidf, self.dev_tweets_tfidf)
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions_tfidf, "development/dt_" + str(max_depth) + "_tfidf_preds.csv")
+
+        # Glove
+        predictions_glove = self.decision_tree(max_depth, self.train_tweets_glove, self.train_labels_glove, self.dev_tweets_glove)
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions_glove, "development/dt_" + str(max_depth) + "_glove_preds.csv")
 
     # neural_network
     def nn_predictions(self):
@@ -89,9 +96,22 @@ class SentimentPrediction:
         predictions = self.logistic_regression(train_tweets_glove, train_labels_glove, dev_tweets_glove)
         self.tdp.write_predictions(dev_tweet_ids_glove, predictions, "development/lr_glove_preds.csv")
 
-    def decision_tree(self, train_tweet, train_labels, test_tweet):
+    def zero_r_predictions(self):
+        # Count
+        predictions_count = self.zero_r(self.train_tweets_count, self.train_labels_count, self.dev_tweets_count)
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions_count, "development/zero_r_count_preds.csv")
+
+        # TF-IDF
+        predictions_tfidf = self.zero_r(self.train_tweets_tfidf, self.train_labels_tfidf, self.dev_tweets_tfidf)
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions_tfidf, "development/zero_r_tfidf_preds.csv")
+
+        # Glove
+        predictions_glove = self.zero_r(self.train_tweets_glove, self.train_labels_glove, self.dev_tweets_glove)
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions_glove, "development/zero_r_glove_preds.csv")
+
+    def decision_tree(self, max_depth, train_tweet, train_labels, test_tweet):
         print("Start Decision Tree...")
-        dtc = DecisionTreeClassifier(criterion="entropy")
+        dtc = DecisionTreeClassifier(criterion="entropy", max_depth=max_depth)
         dtc.fit(train_tweet, train_labels)
         predictions = dtc.predict(test_tweet)
         return predictions
@@ -116,11 +136,19 @@ class SentimentPrediction:
         predictions = gnb.predict(test_data)
         return predictions
 
-    def k_neighbors(self, neighbours, train_data, train_labels, test_data):
+    def k_neighbors(self, neighbours, train_tweet, train_labels, test_tweet):
         print("Start KNN, K = " + str(neighbours) + " ...")
         knc = KNeighborsClassifier(n_neighbors=neighbours)
-        knc.fit(train_data, train_labels)
-        predictions = knc.predict(test_data)
+        knc.fit(train_tweet, train_labels)
+        predictions = knc.predict(test_tweet)
+
+        return predictions
+
+    def zero_r(self, train_tweet, train_labels, test_tweet):
+        from sklearn.dummy import DummyClassifier
+        dc = DummyClassifier(strategy="most_frequent")
+        dc.fit(train_tweet, train_labels)
+        predictions = dc.predict(test_tweet)
         return predictions
 
     def random_baseline(self, test_tweet_ids):
@@ -163,7 +191,7 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.nn_predictions()
+    sp.knn_predictions(1000)
 
 
 if __name__ == "__main__":
