@@ -1,11 +1,16 @@
 import math
 from random import random
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
 from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from DataProcessing import TwitterDataProcessing
+from sklearn.preprocessing import Normalizer
+from sklearn.preprocessing import MinMaxScaler
 
 
 class SentimentPrediction:
@@ -14,11 +19,11 @@ class SentimentPrediction:
         self.train_labels_count, self.train_tweet_ids_count, self.train_tweets_count = self.tdp.read_count_tfidf_data("data/train_count.csv")
         self.dev_labels_count, self.dev_tweet_ids_count, self.dev_tweets_count = self.tdp.read_count_tfidf_data("data/dev_count.csv")
 
-        self.train_labels_tfidf, self.train_tweet_ids_tfidf, self.train_tweets_tfidf = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
-        self.dev_labels_tfidf, self.dev_tweet_ids_tfidf, self.dev_tweets_tfidf = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
-
-        self.train_labels_glove, self.train_tweet_ids_glove, self.train_tweets_glove = self.tdp.read_glove_data("data/train_glove.csv")
-        self.dev_labels_glove, self.dev_tweet_ids_glove, self.dev_tweets_glove = self.tdp.read_glove_data("data/dev_glove.csv")
+        # self.train_labels_tfidf, self.train_tweet_ids_tfidf, self.train_tweets_tfidf = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
+        # self.dev_labels_tfidf, self.dev_tweet_ids_tfidf, self.dev_tweets_tfidf = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
+        #
+        # self.train_labels_glove, self.train_tweet_ids_glove, self.train_tweets_glove = self.tdp.read_glove_data("data/train_glove.csv")
+        # self.dev_labels_glove, self.dev_tweet_ids_glove, self.dev_tweets_glove = self.tdp.read_glove_data("data/dev_glove.csv")
 
     def knn_predictions(self, neighbours):
         # Count
@@ -61,24 +66,65 @@ class SentimentPrediction:
         self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions_glove, "development/nn_glove_preds.csv")
 
     # Perform naive bayes for all data sets and write testing
-    def nb_predictions(self):
-        # Count
+    def multinomial_nb_predictions(self):
+        print("Start MultinomialNB on count data...")
         train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_count.csv")
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
-        predictions = self.naive_bayes(train_tweets.toarray(), train_labels, dev_tweets.toarray())
-        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/nb_count_preds.csv")
 
-        # TF-IDF
+        clf = MultinomialNB()
+        clf.fit(train_tweets, train_labels)
+        predictions = clf.predict(dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/multinomial_nb_count_preds.csv")
+
+        print("Start MultinomialNB on tfidf data...")
         train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
-        predictions = self.naive_bayes(train_tweets.toarray(), train_labels, dev_tweets.toarray())
-        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/nb_tfidf_preds.csv")
 
-        # Glove
+        clf = MultinomialNB()
+        clf.fit(train_tweets, train_labels)
+        predictions = clf.predict(dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/multinomial_nb_tfidf_preds.csv")
+
+        print("Start MultinomialNB on glove data...")
         train_labels, train_tweet_ids, train_tweets = self.tdp.read_glove_data("data/train_glove.csv")
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_glove_data("data/dev_glove.csv")
-        predictions = self.naive_bayes(train_tweets, train_labels, dev_tweets)
-        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/nb_glove_preds.csv")
+
+        scaler = MinMaxScaler().fit(train_tweets)
+        train_tweets = scaler.transform(train_tweets)
+        dev_tweets = scaler.transform(dev_tweets)
+
+        clf = MultinomialNB()
+        clf.fit(train_tweets, train_labels)
+        predictions = clf.predict(dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/multinomial_nb_glove_preds.csv")
+
+    def bernoulli_nb_predictions(self):
+        print("Start BernoulliNB on count data...")
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_count.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
+
+        clf = BernoulliNB()
+        clf.fit(train_tweets, train_labels)
+        predictions = clf.predict(dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/bernoulli_nb_count_preds.csv")
+
+        print("Start BernoulliNB on tfidf data...")
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
+
+        clf = BernoulliNB()
+        clf.fit(train_tweets, train_labels)
+        predictions = clf.predict(dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/bernoulli_nb_tfidf_preds.csv")
+
+        print("Start BernoulliNB on glove data...")
+        train_labels, train_tweet_ids, train_tweets = self.tdp.read_glove_data("data/train_glove.csv")
+        dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_glove_data("data/dev_glove.csv")
+
+        clf = BernoulliNB()
+        clf.fit(train_tweets, train_labels)
+        predictions = clf.predict(dev_tweets)
+        self.tdp.write_predictions(dev_tweet_ids, predictions, "development/bernoulli_nb_glove_preds.csv")
 
     def lr_predictions(self):
         train_labels_count, train_tweet_ids_count, train_tweets_count = self.tdp.read_count_tfidf_data("data/train_count.csv")
@@ -191,7 +237,8 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.knn_predictions(1000)
+    sp.multinomial_nb_predictions()
+    sp.bernoulli_nb_predictions()
 
 
 if __name__ == "__main__":

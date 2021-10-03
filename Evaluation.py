@@ -14,12 +14,13 @@ class PerformanceEvaluation:
         writer.writerow(["Method", "Accuracy Score"])
 
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
-        pred_files = ["knn_1_count", "knn_3_count", "knn_5_count", "knn_7_count", "knn_100_count", "knn_1000_count",
+        pred_files = ["knn_3_count", "knn_5_count", "knn_7_count", "knn_101_count",
                       "nb_count", "lr_count", "nn_count", "dt_count", "zero_r_count",
-                      "knn_1_tfidf", "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf", "knn_100_tfidf", "knn_1000_tfidf",
+                      "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf", "knn_101_tfidf",
                       "nb_tfidf", "lr_tfidf", "nn_tfidf", "dt_tfidf", "zero_r_tfidf",
-                      "knn_1_glove", "knn_3_glove", "knn_5_glove", "knn_7_glove", "knn_100_glove", "knn_1000_glove",
-                      "nb_glove", "lr_glove", "nn_glove", "dt_glove", "zero_r_glove"]
+                      "knn_3_glove", "knn_5_glove", "knn_7_glove", "knn_101_glove",
+                      "nb_glove", "lr_glove", "nn_glove", "dt_glove", "zero_r_glove",
+                      "multinomial_nb_count", "multinomial_nb_tfidf"]
         for pred_file in pred_files:
             predictions = pd.read_csv("development/" + pred_file + "_preds.csv")["sentiment"]
             acc_score = accuracy_score(dev_labels, predictions)
