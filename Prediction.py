@@ -56,15 +56,15 @@ class SentimentPrediction:
     def nn_predictions(self):
         # Count
         predictions_count = self.neural_network(self.train_tweets_count, self.train_labels_count, self.dev_tweets_count)
-        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions_count, "development/nn_64_count_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions_count, "development/nn_(64, 64)_count_preds.csv")
 
         # TF-IDF
         predictions_tfidf = self.neural_network(self.train_tweets_tfidf, self.train_labels_tfidf, self.dev_tweets_tfidf)
-        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions_tfidf, "development/nn_64_tfidf_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions_tfidf, "development/nn_(64, 64)_tfidf_preds.csv")
 
         # Glove
         predictions_glove = self.neural_network(self.train_tweets_glove, self.train_labels_glove, self.dev_tweets_glove)
-        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions_glove, "development/nn_64_glove_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions_glove, "development/nn_(64, 64)_glove_preds.csv")
 
     # Perform naive bayes for all data sets and write testing
     def multinomial_nb_predictions(self):
@@ -163,22 +163,22 @@ class SentimentPrediction:
         predictions = dtc.predict(test_tweet)
         return predictions
 
-    def neural_network(self):
-        clf = MLPClassifier(hidden_layer_sizes = (256, 256), max_iter=500)
+    def neural_network(self, hidden_layer):
+        clf = MLPClassifier(hidden_layer_sizes = hidden_layer, max_iter=1000)
         print("Start Neural Network on count data...")
         clf.fit(self.train_tweets_count, self.train_labels_count)
         predictions = clf.predict(self.dev_tweets_count)
-        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/nn_256_count_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/nn_" + str(hidden_layer) + "_count_preds.csv")
 
         print("Start Neural Network on tfidf data...")
         clf.fit(self.train_tweets_tfidf, self.train_labels_tfidf)
         predictions = clf.predict(self.dev_tweets_tfidf)
-        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/nn_256_tfidf_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/nn_" + str(hidden_layer) + "_tfidf_preds.csv")
 
         print("Start Neural Network on glove data...")
         clf.fit(self.train_tweets_glove, self.train_labels_glove)
         predictions = clf.predict(self.dev_tweets_glove)
-        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/nn_256_glove_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/nn_" + str(hidden_layer) + "_glove_preds.csv")
 
     def logistic_regression(self, train_tweet, train_labels, test_tweet):
         print("Start Logistic Regression...")
@@ -248,7 +248,13 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.neural_network()
+    sp.neural_network((256, 256))
+    sp.neural_network((256, 256, 256))
+    sp.neural_network((512, 512))
+    sp.neural_network((512, 512, 512))
+    sp.neural_network((200, 100, 50))
+    sp.neural_network((512, 256, 64))
+
 
 
 if __name__ == "__main__":
