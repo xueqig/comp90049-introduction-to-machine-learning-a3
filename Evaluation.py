@@ -15,7 +15,7 @@ class PerformanceEvaluation:
 
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
         pred_files = ["knn_3_count", "knn_5_count", "knn_7_count", "knn_101_count",
-                      "multinomial_nb_count", "bernoulli_nb_count", "lr_count", "nn_64_count", "dt_count", "zero_r_count",
+                      "multinomial_nb_count", "bernoulli_nb_count", "lr_count", "nn_64_count", "nn_256_count", "dt_count", "zero_r_count",
                       "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf", "knn_101_tfidf",
                       "multinomial_nb_tfidf", "bernoulli_nb_tfidf", "lr_tfidf", "nn_64_tfidf", "dt_tfidf", "zero_r_tfidf",
                       "knn_3_glove", "knn_5_glove", "knn_7_glove", "knn_101_glove",
