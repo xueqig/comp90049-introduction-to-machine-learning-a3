@@ -19,6 +19,7 @@ class TwitterDataProcessing:
 
     # Read count and tfidf data
     def read_count_tfidf_data(self, file_path):
+        print("Reading " + file_path + " ...")
         data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
         labels = np.array(list(data["sentiment"]))
         tweet_ids = np.array(list(data["tweet_id"]))
@@ -36,6 +37,7 @@ class TwitterDataProcessing:
 
     # Read glove data
     def read_glove_data(self, file_path):
+        print("Reading " + file_path + " ...")
         data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
         labels = list(data["sentiment"])
         tweet_ids = list(data["tweet_id"])
@@ -43,6 +45,7 @@ class TwitterDataProcessing:
         return labels, tweet_ids, tweets
 
     def read_raw_data(self, file_path):
+        print("Reading " + file_path + " ...")
         data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int, "tweet": str})
         labels = np.array(list(data["sentiment"]))
         tweet_ids = np.array(list(data["tweet_id"]))
