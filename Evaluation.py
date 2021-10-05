@@ -16,15 +16,15 @@ class PerformanceEvaluation:
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
         pred_files = ["knn_3_count", "knn_5_count", "knn_7_count", "knn_101_count",
                       "multinomial_nb_count", "bernoulli_nb_count", "lr_count",
-                      "nn_(64, 64)_count", "nn_(256, 256)_count", "nn_(256, 256, 256)_count", "nn_(512, 512)_count",
+                      "nn_(64, 64)_count", "nn_(256, 256)_count", "nn_(256, 256, 256)_count", "nn_(512, 512)_count", "nn_(200, 100, 50)_count", "nn_(256, 128, 64)_count", "nn_(512, 512, 512)_count",
                       "dt_count", "zero_r_count",
                       "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf", "knn_101_tfidf",
                       "multinomial_nb_tfidf", "bernoulli_nb_tfidf", "lr_tfidf",
-                      "nn_(64, 64)_tfidf", "nn_(256, 256)_tfidf", "nn_(256, 256, 256)_tfidf", "nn_(512, 512)_tfidf",
+                      "nn_(64, 64)_tfidf", "nn_(256, 256)_tfidf", "nn_(256, 256, 256)_tfidf", "nn_(512, 512)_tfidf", "nn_(200, 100, 50)_tfidf", "nn_(256, 128, 64)_tfidf",
                       "dt_tfidf", "zero_r_tfidf",
                       "knn_3_glove", "knn_5_glove", "knn_7_glove", "knn_101_glove",
                       "multinomial_nb_glove", "bernoulli_nb_glove", "lr_glove",
-                      "nn_(64, 64)_glove", "nn_(256, 256)_glove", "nn_(256, 256, 256)_glove",
+                      "nn_(64, 64)_glove", "nn_(256, 256)_glove", "nn_(256, 256, 256)_glove", "nn_(200, 100, 50)_glove", "nn_(256, 128, 64)_glove",
                       "dt_glove", "zero_r_glove"]
         for pred_file in pred_files:
             predictions = pd.read_csv("development/" + pred_file + "_preds.csv")["sentiment"]

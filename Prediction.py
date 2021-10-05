@@ -248,12 +248,10 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.neural_network((256, 256))
-    sp.neural_network((256, 256, 256))
-    sp.neural_network((512, 512))
-    sp.neural_network((512, 512, 512))
     sp.neural_network((200, 100, 50))
-    sp.neural_network((512, 256, 64))
+    sp.neural_network((256, 128, 64))
+    sp.neural_network((512, 512, 512))
+    sp.neural_network((512, 512))
 
 
 
