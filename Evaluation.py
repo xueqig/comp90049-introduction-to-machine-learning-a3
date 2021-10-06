@@ -14,17 +14,28 @@ class PerformanceEvaluation:
         writer.writerow(["Method", "Accuracy Score"])
 
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
-        pred_files = ["knn_3_count", "knn_5_count", "knn_7_count", "knn_101_count",
-                      "multinomial_nb_count", "bernoulli_nb_count", "lr_count",
-                      "nn_1_count", "nn_3_count", "nn_sgd_3_count", "nn_3_count_stop", "nn_5_count", "nn_7_count", "nn_(3, 1)_count", "nn_(3, 3)_count", "nn_sgd_(3, 3)_count", "nn_(3, 3)_count_stop", "nn_(3, 3, 3)_count", "nn_(64, 64)_count", "nn_(256, 256)_count", "nn_(256, 256, 256)_count", "nn_(512, 512)_count", "nn_(200, 100, 50)_count", "nn_(256, 128, 64)_count", "nn_(512, 512, 512)_count",
+        pred_files = ["knn_101_count", "multinomial_nb_count", "bernoulli_nb_count", "lr_count",
+                      "nn_log_adam_3_count", "nn_log_adam_64_count", "nn_sgd_3_count", "nn_log_sgd_3_count",
+                      "nn_sgd_(3, 1)_count", "nn_log_adam_(3, 3)_count", "nn_log_adam_(64, 64)_count",
+                      "nn_log_adam_(256, 128, 64)_count", "nn_log_adam_(256, 128, 64, 32)_count",
+                      "nn_log_adam_(512, 256, 128)_count", "nn_log_adam_(200, 100, 50)_count",
+                      "nn_sgd_(3, 3)_count", "nn_log_sgd_(3, 3)_count",
+
                       "dt_count", "zero_r_count",
-                      "knn_3_tfidf", "knn_5_tfidf", "knn_7_tfidf", "knn_101_tfidf",
-                      "multinomial_nb_tfidf", "bernoulli_nb_tfidf", "lr_tfidf",
-                      "nn_1_tfidf", "nn_3_tfidf", "nn_sgd_3_tfidf",  "nn_3_tfidf_stop", "nn_5_tfidf", "nn_7_tfidf", "nn_(3, 1)_tfidf", "nn_(3, 3)_tfidf_stop", "nn_sgd_(3, 3)_tfidf", "nn_(64, 64)_tfidf", "nn_(256, 256)_tfidf", "nn_(256, 256, 256)_tfidf", "nn_(512, 512)_tfidf", "nn_(200, 100, 50)_tfidf", "nn_(256, 128, 64)_tfidf",
+                      "knn_101_tfidf", "multinomial_nb_tfidf", "bernoulli_nb_tfidf", "lr_tfidf",
+                      "nn_log_adam_3_tfidf", "nn_log_adam_64_tfidf", "nn_sgd_3_tfidf", "nn_log_sgd_3_tfidf",
+                      "nn_sgd_(3, 1)_tfidf", "nn_log_adam_(3, 3)_tfidf", "nn_log_adam_(64, 64)_tfidf",
+                      "nn_log_adam_(256, 128, 64)_tfidf", "nn_log_adam_(256, 128, 64, 32)_tfidf",
+                      "nn_log_adam_(512, 256, 128)_tfidf", "nn_log_adam_(200, 100, 50)_tfidf",
+                      "nn_sgd_(3, 3)_tfidf", "nn_log_sgd_(3, 3)_tfidf",
                       "dt_tfidf", "zero_r_tfidf",
-                      "knn_3_glove", "knn_5_glove", "knn_7_glove", "knn_101_glove",
-                      "multinomial_nb_glove", "bernoulli_nb_glove", "lr_glove",
-                      "nn_1_glove", "nn_3_glove", "nn_sgd_3_glove",  "nn_3_glove_stop", "nn_5_glove", "nn_7_glove", "nn_(3, 1)_glove", "nn_(3, 3)_glove_stop", "nn_sgd_(3, 3)_glove", "nn_(64, 64)_glove", "nn_(256, 256)_glove", "nn_(256, 256, 256)_glove", "nn_(200, 100, 50)_glove", "nn_(256, 128, 64)_glove",
+
+                      "knn_101_glove", "multinomial_nb_glove", "bernoulli_nb_glove", "lr_glove",
+                      "nn_log_adam_3_glove", "nn_log_adam_64_glove", "nn_sgd_3_glove", "nn_log_sgd_3_glove",
+                      "nn_sgd_(3, 1)_glove", "nn_log_adam_(3, 3)_glove", "nn_log_adam_(64, 64)_glove",
+                      "nn_log_adam_(256, 128, 64)_glove", "nn_log_adam_(256, 128, 64, 32)_glove",
+                      "nn_log_adam_(512, 256, 128)_glove", "nn_log_adam_(200, 100, 50)_glove",
+                      "nn_sgd_(3, 3)_glove", "nn_log_sgd_(3, 3)_glove",
                       "dt_glove", "zero_r_glove"]
         for pred_file in pred_files:
             predictions = pd.read_csv("development/" + pred_file + "_preds.csv")["sentiment"]
