@@ -164,21 +164,21 @@ class SentimentPrediction:
         return predictions
 
     def neural_network(self, hidden_layer):
-        clf = MLPClassifier(hidden_layer_sizes = hidden_layer, max_iter=1000)
+        clf = MLPClassifier(hidden_layer_sizes = hidden_layer, early_stopping=True, solver="sgd", max_iter=1000)
         print("Start Neural Network on count data...")
         clf.fit(self.train_tweets_count, self.train_labels_count)
         predictions = clf.predict(self.dev_tweets_count)
-        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/nn_" + str(hidden_layer) + "_count_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/nn_sgd_" + str(hidden_layer) + "_count_preds.csv")
 
         print("Start Neural Network on tfidf data...")
         clf.fit(self.train_tweets_tfidf, self.train_labels_tfidf)
         predictions = clf.predict(self.dev_tweets_tfidf)
-        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/nn_" + str(hidden_layer) + "_tfidf_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/nn_sgd_" + str(hidden_layer) + "_tfidf_preds.csv")
 
         print("Start Neural Network on glove data...")
         clf.fit(self.train_tweets_glove, self.train_labels_glove)
         predictions = clf.predict(self.dev_tweets_glove)
-        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/nn_" + str(hidden_layer) + "_glove_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/nn_sgd" + str(hidden_layer) + "_glove_preds.csv")
 
     def logistic_regression(self, train_tweet, train_labels, test_tweet):
         print("Start Logistic Regression...")
@@ -248,10 +248,8 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.neural_network((200, 100, 50))
-    sp.neural_network((256, 128, 64))
-    sp.neural_network((512, 512, 512))
-    sp.neural_network((512, 512))
+    sp.neural_network((3))
+    sp.neural_network((3, 3))
 
 
 
