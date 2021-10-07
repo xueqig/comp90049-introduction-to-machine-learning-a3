@@ -22,33 +22,6 @@ class PerformanceEvaluation:
                       ["Multilayer Perceptron (hidden_layer = (10, 5))", "mp_logistic_(10, 5)_count", "mp_logistic_(10, 5)_tfidf", "mp_logistic_(10, 5)_glove"],
                       ["Multilayer Perceptron (hidden_layer = (50, 25))", "mp_logistic_(50, 25)_count", "mp_logistic_(50, 25)_tfidf", "mp_logistic_(50, 25)_glove"],
                       ["Multilayer Perceptron (hidden_layer = (100, 50))", "mp_logistic_(100, 50)_count", "mp_logistic_(100, 50)_tfidf", "mp_logistic_(100, 50)_glove"]]
-        # pred_files = ["knn_101_count", "knn_151_count", "knn_201_count", "multinomial_nb_count", "bernoulli_nb_count", "lr_count",
-        #               "nn_log_adam_3_count", "nn_log_adam_64_count", "nn_sgd_3_count", "nn_log_sgd_3_count",
-        #               "nn_sgd_(3, 1)_count", "nn_log_adam_b3_(3, 3)_count", "nn_log_adam_b80_(3, 3)_count",
-        #               "nn_log_adam_b500_(3, 3)_count", "nn_log_adam_b1000_(3, 3)_count", "nn_log_adam_(3, 3)_count",
-        #               "nn_log_adam_(4, 2)_count", "nn_tanh_(5, 3)_count", "nn_logistic_(5, 3)_count",
-        #               "nn_logistic_(10, 5)_count", "nn_logistic_(10, 10)_count", "nn_logistic_(20, 10)_count",
-        #               "nn_logistic_(20, 10, 5)_count", "nn_log_adam_(64, 64)_count",
-        #               "nn_log_adam_(256, 128, 64)_count", "nn_log_adam_(256, 128, 64, 32)_count",
-        #               "nn_log_adam_(512, 256, 128)_count", "nn_log_adam_(200, 100, 50)_count",
-        #               "nn_sgd_(3, 3)_count", "nn_log_sgd_(3, 3)_count",
-        #
-        #               "dt_count", "zero_r_count",
-        #               "knn_101_tfidf", "multinomial_nb_tfidf", "bernoulli_nb_tfidf", "lr_tfidf",
-        #               "nn_log_adam_3_tfidf", "nn_log_adam_64_tfidf", "nn_sgd_3_tfidf", "nn_log_sgd_3_tfidf",
-        #               "nn_sgd_(3, 1)_tfidf", "nn_log_adam_b80_(3, 3)_tfidf", "nn_log_adam_(3, 3)_tfidf", "nn_log_adam_(4, 2)_tfidf", "nn_log_adam_(64, 64)_tfidf",
-        #               "nn_log_adam_(256, 128, 64)_tfidf", "nn_log_adam_(256, 128, 64, 32)_tfidf",
-        #               "nn_log_adam_(512, 256, 128)_tfidf", "nn_log_adam_(200, 100, 50)_tfidf",
-        #               "nn_sgd_(3, 3)_tfidf", "nn_log_sgd_(3, 3)_tfidf",
-        #               "dt_tfidf", "zero_r_tfidf",
-        #
-        #               "knn_101_glove", "multinomial_nb_glove", "bernoulli_nb_glove", "lr_glove",
-        #               "nn_log_adam_3_glove", "nn_log_adam_64_glove", "nn_sgd_3_glove", "nn_log_sgd_3_glove",
-        #               "nn_sgd_(3, 1)_glove", "nn_log_adam_b80_(3, 3)_glove", "nn_log_adam_(3, 3)_glove", "nn_log_adam_(4, 2)_glove", "nn_log_adam_(64, 64)_glove",
-        #               "nn_log_adam_(256, 128, 64)_glove", "nn_log_adam_(256, 128, 64, 32)_glove",
-        #               "nn_log_adam_(512, 256, 128)_glove", "nn_log_adam_(200, 100, 50)_glove",
-        #               "nn_sgd_(3, 3)_glove", "nn_log_sgd_(3, 3)_glove",
-        #               "dt_glove", "zero_r_glove"]
 
         for pred_file in pred_files:
             pred_count = pd.read_csv("development/" + pred_file[1] + "_preds.csv")["sentiment"]

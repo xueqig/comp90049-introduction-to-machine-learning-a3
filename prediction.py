@@ -133,16 +133,14 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    # sp.zero_r()
-    # sp.k_nearest_neighbor(101)
-    # sp.multinomial_nb()
-    # sp.bernoulli_nb()
-    # sp.logistic_regression()
-    # sp.multilayer_perceptron((10, 5), "logistic")
-    # sp.multilayer_perceptron((20, 10), "logistic")
-    # sp.multilayer_perceptron((50, 25), "logistic")
-    # sp.multilayer_perceptron((100, 50), "logistic")
-    sp.multilayer_perceptron((400, 200), "logistic")
+    sp.zero_r()
+    sp.k_nearest_neighbor(101)
+    sp.multinomial_nb()
+    sp.bernoulli_nb()
+    sp.logistic_regression()
+    sp.multilayer_perceptron((10, 5), "logistic")
+    sp.multilayer_perceptron((50, 25), "logistic")
+    sp.multilayer_perceptron((100, 50), "logistic")
 
 
 
