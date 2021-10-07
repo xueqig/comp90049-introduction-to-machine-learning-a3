@@ -6,18 +6,6 @@ from scipy.sparse import lil_matrix
 
 
 class TwitterDataProcessing:
-    def __init__(self):
-        pass
-        # self.train_labels, self.train_tweet_ids, self.train_tweets = self.read_glove_data("data/train_glove.csv")
-        # self.dev_labels, self.dev_tweet_ids, self.dev_tweets = self.read_glove_data("data/dev_glove.csv")
-        # self.test_tweet_ids, self.test_tweets = self.read_count_tfidf_data("data/test_count.csv")
-
-        # knn
-        # for i in [1, 3, 5, 7]:
-        #     testing = self.knn_preds(i, self.train_tweets, self.train_labels, self.dev_tweets)
-        #     self.write_predictions(self.dev_tweet_ids, testing, "development/knn_" + str(i) + "_glove_preds.csv")
-
-    # Read count and tfidf data
     def read_count_tfidf_data(self, file_path):
         print("Reading " + file_path + " ...")
         data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
@@ -35,7 +23,6 @@ class TwitterDataProcessing:
 
         return labels, tweet_ids, tweets_sparse_matrix
 
-    # Read glove data
     def read_glove_data(self, file_path):
         print("Reading " + file_path + " ...")
         data = pd.read_csv(file_path, dtype={"sentiment": str, "tweet_id": int}, converters={"tweet": literal_eval})
@@ -50,7 +37,6 @@ class TwitterDataProcessing:
         labels = np.array(list(data["sentiment"]))
         tweet_ids = np.array(list(data["tweet_id"]))
         tweets = np.array(list(data["tweet"]))
-
         return labels, tweet_ids, tweets
 
     def write_predictions(self, tweet_ids, predictions, file_path):
