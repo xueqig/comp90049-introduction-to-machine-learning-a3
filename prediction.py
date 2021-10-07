@@ -59,22 +59,22 @@ class SentimentPrediction:
         predictions = clf.predict(self.dev_tweets_glove)
         self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/bernoulli_nb_glove_preds.csv")
 
-    def neural_network(self, hidden_layer):
-        clf = MLPClassifier(hidden_layer_sizes = hidden_layer, activation="logistic", early_stopping=True, max_iter=500, batch_size=3)
+    def neural_network(self, hidden_layer, activation_func):
+        clf = MLPClassifier(hidden_layer_sizes = hidden_layer, activation=activation_func, early_stopping=True, max_iter=500)
         print("Start Neural Network on count data...")
         clf.fit(self.train_tweets_count, self.train_labels_count)
         predictions = clf.predict(self.dev_tweets_count)
-        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/nn_log_adam_b3_" + str(hidden_layer) + "_count_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/nn_" + activation_func + "_" +  str(hidden_layer) + "_count_preds.csv")
 
         print("Start Neural Network on tfidf data...")
         clf.fit(self.train_tweets_tfidf, self.train_labels_tfidf)
         predictions = clf.predict(self.dev_tweets_tfidf)
-        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/nn_log_adam_b3_" + str(hidden_layer) + "_tfidf_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/nn_" + activation_func + "_" + str(hidden_layer) + "_tfidf_preds.csv")
 
         print("Start Neural Network on glove data...")
         clf.fit(self.train_tweets_glove, self.train_labels_glove)
         predictions = clf.predict(self.dev_tweets_glove)
-        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/nn_log_adam_b3_" + str(hidden_layer) + "_glove_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/nn_" + activation_func + "_" + str(hidden_layer) + "_glove_preds.csv")
 
     def logistic_regression(self):
         clf = LogisticRegression(max_iter=500)
@@ -130,7 +130,8 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.k_nearest_neighbor(1)
+    sp.k_nearest_neighbor(151)
+    sp.k_nearest_neighbor(201)
 
 
 if __name__ == "__main__":
