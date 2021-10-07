@@ -15,12 +15,15 @@ class SentimentPrediction:
 
         self.train_labels_count, self.train_tweet_ids_count, self.train_tweets_count = self.tdp.read_count_tfidf_data("data/train_count.csv")
         self.dev_labels_count, self.dev_tweet_ids_count, self.dev_tweets_count = self.tdp.read_count_tfidf_data("data/dev_count.csv")
+        # self.test_labels_count, self.test_tweet_ids_count, self.test_tweets_count = self.tdp.read_count_tfidf_data("data/test_count.csv")
 
         self.train_labels_tfidf, self.train_tweet_ids_tfidf, self.train_tweets_tfidf = self.tdp.read_count_tfidf_data("data/train_tfidf.csv")
         self.dev_labels_tfidf, self.dev_tweet_ids_tfidf, self.dev_tweets_tfidf = self.tdp.read_count_tfidf_data("data/dev_tfidf.csv")
+        # self.test_labels_tfidf, self.test_tweet_ids_tfidf, self.test_tweets_tfidf = self.tdp.read_count_tfidf_data("data/test_tfidf.csv")
 
         self.train_labels_glove, self.train_tweet_ids_glove, self.train_tweets_glove = self.tdp.read_glove_data("data/train_glove.csv")
         self.dev_labels_glove, self.dev_tweet_ids_glove, self.dev_tweets_glove = self.tdp.read_glove_data("data/dev_glove.csv")
+        # self.test_labels_glove, self.test_tweet_ids_glove, self.test_tweets_glove = self.tdp.read_glove_data("data/test_glove.csv")
 
     def multinomial_nb(self):
         clf = MultinomialNB()
@@ -59,22 +62,22 @@ class SentimentPrediction:
         predictions = clf.predict(self.dev_tweets_glove)
         self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/bernoulli_nb_glove_preds.csv")
 
-    def neural_network(self, hidden_layer, activation_func):
+    def multilayer_perceptron(self, hidden_layer, activation_func):
         clf = MLPClassifier(hidden_layer_sizes = hidden_layer, activation=activation_func, early_stopping=True, max_iter=500)
-        print("Start Neural Network on count data...")
+        print("Start Multilayer Perceptron on count data...")
         clf.fit(self.train_tweets_count, self.train_labels_count)
         predictions = clf.predict(self.dev_tweets_count)
-        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/nn_" + activation_func + "_" +  str(hidden_layer) + "_count_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_count, predictions, "development/mp_" + activation_func + "_" +  str(hidden_layer) + "_count_preds.csv")
 
-        print("Start Neural Network on tfidf data...")
+        print("Start Multilayer Perceptron on tfidf data...")
         clf.fit(self.train_tweets_tfidf, self.train_labels_tfidf)
         predictions = clf.predict(self.dev_tweets_tfidf)
-        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/nn_" + activation_func + "_" + str(hidden_layer) + "_tfidf_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_tfidf, predictions, "development/mp_" + activation_func + "_" + str(hidden_layer) + "_tfidf_preds.csv")
 
-        print("Start Neural Network on glove data...")
+        print("Start Multilayer Perceptron on glove data...")
         clf.fit(self.train_tweets_glove, self.train_labels_glove)
         predictions = clf.predict(self.dev_tweets_glove)
-        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/nn_" + activation_func + "_" + str(hidden_layer) + "_glove_preds.csv")
+        self.tdp.write_predictions(self.dev_tweet_ids_glove, predictions, "development/mp_" + activation_func + "_" + str(hidden_layer) + "_glove_preds.csv")
 
     def logistic_regression(self):
         clf = LogisticRegression(max_iter=500)
@@ -130,8 +133,17 @@ class SentimentPrediction:
 
 def main():
     sp = SentimentPrediction()
-    sp.k_nearest_neighbor(151)
-    sp.k_nearest_neighbor(201)
+    # sp.zero_r()
+    # sp.k_nearest_neighbor(101)
+    # sp.multinomial_nb()
+    # sp.bernoulli_nb()
+    # sp.logistic_regression()
+    # sp.multilayer_perceptron((10, 5), "logistic")
+    # sp.multilayer_perceptron((20, 10), "logistic")
+    # sp.multilayer_perceptron((50, 25), "logistic")
+    # sp.multilayer_perceptron((100, 50), "logistic")
+    sp.multilayer_perceptron((400, 200), "logistic")
+
 
 
 if __name__ == "__main__":

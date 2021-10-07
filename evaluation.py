@@ -15,11 +15,13 @@ class PerformanceEvaluation:
 
         dev_labels, dev_tweet_ids, dev_tweets = self.tdp.read_count_tfidf_data("data/dev_count.csv")
         pred_files = [["Zero R", "zero_r_count", "zero_r_tfidf", "zero_r_glove"],
-                      ["KNN K = 101", "knn_101_count", "knn_101_tfidf", "knn_101_glove"],
+                      ["KNN (K = 101)", "knn_101_count", "knn_101_tfidf", "knn_101_glove"],
                       ["Multinomial Naive Bayes", "multinomial_nb_count", "multinomial_nb_tfidf", "multinomial_nb_glove"],
                       ["Bernoulli Naive Bayes", "bernoulli_nb_count", "bernoulli_nb_tfidf", "bernoulli_nb_glove"],
                       ["Logistic Regression", "lr_count", "lr_tfidf", "lr_glove"],
-                      ["Multilayer Perceptron", "nn_logistic_(10, 5)_count", "nn_logistic_(10, 5)_tfidf", "nn_logistic_(10, 5)_glove"]]
+                      ["Multilayer Perceptron (hidden_layer = (10, 5))", "mp_logistic_(10, 5)_count", "mp_logistic_(10, 5)_tfidf", "mp_logistic_(10, 5)_glove"],
+                      ["Multilayer Perceptron (hidden_layer = (50, 25))", "mp_logistic_(50, 25)_count", "mp_logistic_(50, 25)_tfidf", "mp_logistic_(50, 25)_glove"],
+                      ["Multilayer Perceptron (hidden_layer = (100, 50))", "mp_logistic_(100, 50)_count", "mp_logistic_(100, 50)_tfidf", "mp_logistic_(100, 50)_glove"]]
         # pred_files = ["knn_101_count", "knn_151_count", "knn_201_count", "multinomial_nb_count", "bernoulli_nb_count", "lr_count",
         #               "nn_log_adam_3_count", "nn_log_adam_64_count", "nn_sgd_3_count", "nn_log_sgd_3_count",
         #               "nn_sgd_(3, 1)_count", "nn_log_adam_b3_(3, 3)_count", "nn_log_adam_b80_(3, 3)_count",
