@@ -1,0 +1,9 @@
+Method/Accuracy,BoW,TF-IDF,GloVe
+Zero R,0.4067,0.4067,0.4067
+KNN (K = 101),0.6244,0.6976,0.6281
+Multinomial Naive Bayes,0.7308,0.7256,0.4402
+Bernoulli Naive Bayes,0.7338,0.7338,0.5889
+Logistic Regression,0.7409,0.7417,0.6779
+"Multilayer Perceptron (hidden_layer = (10, 5))",0.7441,0.7436,0.6863
+"Multilayer Perceptron (hidden_layer = (50, 25))",0.7432,0.7428,0.7033
+"Multilayer Perceptron (hidden_layer = (100, 50))",0.7417,0.7392,0.7085
